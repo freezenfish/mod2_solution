@@ -1,73 +1,51 @@
-(function () {
-	'use strict';
+(function(){
+'use strict';
 
-	angular.module('ShoppingListCheckOff', [])
-	.controller('ToBuyController', ToBuyController)
-	.controller('AlreadyBoughtController', AlreadyBoughtController)
-	.service('ShoppingListCheckOffService', ShoppingListCheckOffService);
+angular.module('ShoppingListCheckOff', [])
+.controller('ToBuyController', ToBuyController)
+.controller('AlreadyBoughtController', AlreadyBoughtController)
+.service('ShoppingListCheckOffService', ShoppingListCheckOffService);
 
-	ToBuyController.$inject = ['ShoppingListCheckOffService'];
-	function ToBuyController(ShoppingListCheckOffService){
-		var shoppingList = this;
-		shoppingList.items = ShoppingListCheckOffService.getUnboughtItems();
-		shoppingList.buyItem = function(itemId){
-			ShoppingListCheckOffService.buyItem(itemId);
-			shoppingList.items = ShoppingListCheckOffService.getItems();//getUnboughtItems();
-		};
-	}
+ToBuyController.$inject = ['ShoppingListCheckOffService'];
+function ToBuyController(ShoppingListCheckOffService){
+var shoppingList = this;
+shoppingList.items = ShoppingListCheckOffService.getItems();
+shoppingList.addItem = function(itemIndex){
+ShoppingListCheckOffService.addItem(itemIndex);
+}
+}
 
-	AlreadyBoughtController.$inject = ['ShoppingListCheckOffService'];
-	function AlreadyBoughtController(ShoppingListCheckOffService){
-		var alreadyBoughtList = this;
-		alreadyBoughtList.items = ShoppingListCheckOffService.getItems();//getBoughtItems();
-	}
+AlreadyBoughtController.$inject = ['ShoppingListCheckOffService'];
+function AlreadyBoughtController(ShoppingListCheckOffService){
+var shoppingList = this;
+shoppingList.items = ShoppingListCheckOffService.getBoughtItems();
+}
 
-	function ShoppingListCheckOffService(){
-		var service = this;
-		var items = [
-		{"id": 1, "name": "cookies", "quantity": 2, "bought": false},
-		{"id": 2,"name": "koko wawa", "quantity": 3, "bought": false},
-		{"id": 3,"name": "only koko", "quantity": 5, "bought": false},
-		{"id": 4,"name": "only wawa", "quantity": 7, "bought": false},
-		{"id": 5,"name": "wawa koko", "quantity": 11, "bought": false}
-		];
+function ShoppingListCheckOffService(){
+var service = this;
 
-		service.buyItem = function(itemId){
+//List of shopping items
+var items = [
+{ name: 'Cookie', quantity: '2 bags' },
+{ name: 'Milk', quantity: '2 gallons' },
+{ name: 'Donuts', quantity: '6' },
+{ name: 'chocolate', quantity: '3 bags' },
+{ name: 'Coke', quantity: '12 cans' }
+];
 
-			var itemIndex = items.findIndex(function(item){
-				return item.id == itemId;
-			});
-			if(itemIndex !== -1){
-				items[itemIndex].bought = true;
-			}
-		}
-		service.getItems = function(){
-			return items;
-		};
+var itemBought = [];
 
-		service.getBoughtItems = function(){
-			var filtered = items.filter(function(item){
-				try{
-					return item.bought === true;
-				}
-				catch(error){
-					return false;
-				}
-			});
-			return filtered;
-		};
+service.addItem = function(itemIndex) {
+itemBought.push(items[itemIndex]);
+items.splice(itemIndex, 1);
+}
 
-		service.getUnboughtItems = function(){
-			var filtered = items.filter(function(item){
-				try{
-					return item.bought === false;
-				}
-				catch(error){
-					return false;
-				}
-			});
-			return filtered;
-		};
+service.getBoughtItems = function(){
+return itemBought;
+}
 
-	}
+service.getItems = function(){
+return items;
+}
+}
 })();
